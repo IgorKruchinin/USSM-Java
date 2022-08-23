@@ -1,17 +1,20 @@
 package USSM.USSM.LOQ;
+
 import USSM.USM.*;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Stack;
+import java.util.*;
 
 public class LOQ {
     private Map<String, USM> profiles;
     private Stack<Integer> integers;
     private Stack<String> strings;
+    private String prof_name = "";
     private int lastFormat = -1;
     public LOQ() {
         profiles = new HashMap<>();
+        for (USM prof: USM.get_profiles()) {
+            profiles.put(prof.get_name(), prof);
+        }
         integers = new Stack<>();
         strings = new Stack<>();
     }
@@ -28,15 +31,21 @@ public class LOQ {
         boolean name_get_flag = false;
         boolean getting_flag = false;
         boolean index_get_flag = false;
+        boolean add_value_flag = false;
+        boolean adding_value_flag = false;
         int index = -1;
-        String prof_name = "";
+        //String prof_name = "";
         String name = "";
         int format = -1;
         for (String q: query.split(" ")) {
             if (create_flag) {
                 create_flag = false;
-                profiles.put(q, new USM(q));
-                prof_name = q;
+                if (prof_name.equals("")) {
+                    profiles.put(q, new USM(q));
+                    prof_name = q;
+                } else {
+                    add_flag = true;
+                }
                 continue;
             } else if (add_flag) {
                 add_flag = false;
@@ -61,10 +70,12 @@ public class LOQ {
                     case 0:
                         profiles.get(prof_name).create_isec(name);
                         profiles.get(prof_name).to_file();
+                        name = "";
                         break;
                     case 1:
                         profiles.get(prof_name).create_ssec(name);
                         profiles.get(prof_name).to_file();
+                        name = "";
                         break;
                 }
                 continue;
@@ -98,9 +109,11 @@ public class LOQ {
                 switch(format) {
                     case 0:
                         profiles.get(prof_name).geti(name).add(Integer.parseInt(q));
+                        profiles.get(prof_name).to_file();
                         break;
                     case 1:
                         profiles.get(prof_name).gets(name).add(q);
+                        profiles.get(prof_name).to_file();
                         break;
                 }
                 continue;
@@ -139,13 +152,26 @@ public class LOQ {
                         break;
                 }
                 continue;
+            } else if (add_value_flag) {
+                add_value_flag = false;
+                name = q;
+                adding_value_flag = true;
+                continue;
+            } else if (adding_value_flag) {
+                adding_value_flag = false;
+                if (profiles.get(prof_name).get(name) instanceof IntSection) {
+                    profiles.get(prof_name).geti(name).add(Integer.parseInt(q));
+                } else if (profiles.get(prof_name).get(name) instanceof StringSection) {
+                    profiles.get(prof_name).gets(name).add(q);
+                }
+                continue;
             }
             switch(q) {
                 case "create":
                     create_flag = true;
                     break;
                 case "add":
-                    add_flag = true;
+                    add_value_flag = true;
                     break;
                 case "entry":
                     entry_flag = true;
@@ -156,6 +182,14 @@ public class LOQ {
                 case "get":
                     get_flag = true;
                     break;
+                case "table":
+                    AsTable(profiles.get(prof_name));
+                    break;
+                case "exit":
+                    prof_name = "";
+                    break;
+                case "quit":
+                    System.exit(0);
             }
         }
     }
@@ -167,5 +201,23 @@ public class LOQ {
     }
     int getLastFormat() {
         return lastFormat;
+    }
+    String getProfName() {
+        return prof_name;
+    }
+    private List<String> AsTable(USM profile) {
+        List<String> secLst = new Vector<>();
+        for (Section s: profile.getAll()) {
+            if (s instanceof StringSection) {
+                for (int i = 0; i < s.size(); ++i) {
+                    secLst.add(((StringSection)s).get(i));
+                }
+            } else if (s instanceof IntSection) {
+                for (int i = 0; i < s.size(); ++i) {
+                    secLst.add(String.valueOf(((IntSection)s).get(i)));
+                }
+            }
+        }
+        return secLst;
     }
 }
