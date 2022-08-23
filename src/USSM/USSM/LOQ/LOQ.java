@@ -1,14 +1,20 @@
 package USSM.USSM.LOQ;
 import USSM.USM.*;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
 
 public class LOQ {
-    Map<String, USM> profiles;
-    Stack<Integer> integers;
-    Stack<String> strings;
-    int last_format = -1;
+    private Map<String, USM> profiles;
+    private Stack<Integer> integers;
+    private Stack<String> strings;
+    private int lastFormat = -1;
+    public LOQ() {
+        profiles = new HashMap<>();
+        integers = new Stack<>();
+        strings = new Stack<>();
+    }
     public void parseQuery(String query) throws LOQNoProfileException {
         boolean create_flag = false;
         boolean add_flag = false;
@@ -124,11 +130,11 @@ public class LOQ {
                 getting_flag = false;
                 switch (format) {
                     case 0:
-                        last_format = 0;
+                        lastFormat = 0;
                         integers.push(profiles.get(prof_name).geti(name).get(index));
                         break;
                     case 1:
-                        last_format = 1;
+                        lastFormat = 1;
                         strings.push(profiles.get(prof_name).gets(name).get(index));
                         break;
                 }
@@ -152,5 +158,14 @@ public class LOQ {
                     break;
             }
         }
+    }
+    int popInt() {
+        return integers.pop();
+    }
+    String popStr() {
+        return strings.pop();
+    }
+    int getLastFormat() {
+        return lastFormat;
     }
 }
