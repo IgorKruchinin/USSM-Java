@@ -1,4 +1,4 @@
-package USM;
+package USSM.USM;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashMap;

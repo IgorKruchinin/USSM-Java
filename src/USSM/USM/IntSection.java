@@ -1,4 +1,4 @@
-package USM;
+package USSM.USM;
 import java.util.Vector;
 
 import java.util.List;
