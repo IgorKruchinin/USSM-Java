@@ -11,7 +11,7 @@ public class USM {
     private String name_;
     //private Map<String, IntSection> isecs_;
     //private Map<String, StringSection> ssecs_;
-    private Map<String, Section> secs_;
+    private SortedMap<String, Section> secs_;
     private List<Integer> formats;
     private boolean is_opened;
     public USM(final String name) {
@@ -19,7 +19,7 @@ public class USM {
         Path path = Paths.get("profiles/", name_ + ".uto");
         //isecs_ = new HashMap<>();
         //ssecs_ = new HashMap<>();
-        secs_ = new HashMap<>();
+        secs_ = new TreeMap<>();
         formats = new Vector<>();
         try {
             is_opened = true;
@@ -53,7 +53,7 @@ public class USM {
                 name_ = name;
                 //isecs_ = new HashMap<>();
                 //ssecs_ = new HashMap<>();
-                secs_ = new HashMap<>();
+                secs_ = new TreeMap<>();
                 formats = new Vector<>();
                 Path path = Paths.get("profiles/", name_ + ".uto");
                 Files.createFile(path);

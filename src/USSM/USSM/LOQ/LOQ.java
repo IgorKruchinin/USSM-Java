@@ -5,20 +5,23 @@ import USSM.USM.*;
 import java.util.*;
 
 public class LOQ {
-    private Map<String, USM> profiles;
+    private SortedMap<String, USM> profiles;
     private Stack<Integer> integers;
     private Stack<String> strings;
     private String prof_name = "";
     private int lastFormat = -1;
+    private boolean is_changed;
     public LOQ() {
-        profiles = new HashMap<>();
+        profiles = new TreeMap<>();
         for (USM prof: USM.get_profiles()) {
             profiles.put(prof.get_name(), prof);
         }
         integers = new Stack<>();
         strings = new Stack<>();
+        is_changed = false;
     }
     public void parseQuery(String query) throws LOQNoProfileException {
+        is_changed = false;
         boolean create_flag = false;
         boolean add_flag = false;
         boolean post_add_flag = false;
@@ -33,7 +36,7 @@ public class LOQ {
         boolean index_get_flag = false;
         boolean add_value_flag = false;
         boolean adding_value_flag = false;
-        int index = -1;
+        int index;
         //String prof_name = "";
         String name = "";
         int format = -1;
@@ -44,28 +47,20 @@ public class LOQ {
                     profiles.put(q, new USM(q));
                     prof_name = q;
                 } else {
-                    add_flag = true;
+                    switch (q) {
+                        case "int":
+                            format = 0;
+                            break;
+                        case "str":
+                            format = 1;
+                            break;
+                    }
+                    post_add_flag = true;
                 }
-                continue;
-            } else if (add_flag) {
-                add_flag = false;
-                switch(q) {
-                    case "int":
-                        format = 0;
-                        break;
-                    case "str":
-                        format = 1;
-                        break;
-                }
-                post_add_flag = true;
                 continue;
             } else if (post_add_flag) {
                 post_add_flag = false;
                 name = q;
-                adding_flag = true;
-                continue;
-            } else if (adding_flag) {
-                adding_flag = false;
                 switch(format) {
                     case 0:
                         profiles.get(prof_name).create_isec(name);
@@ -104,7 +99,7 @@ public class LOQ {
                 name = q;
                 writing_flag = true;
                 continue;
-            } else if (writing_flag) {
+            } else if(writing_flag) {
                 writing_flag = false;
                 switch(format) {
                     case 0:
@@ -119,37 +114,20 @@ public class LOQ {
                 continue;
             } else if (get_flag) {
                 get_flag = false;
-                switch(q) {
-                    case "int":
-                        format = 0;
-                        break;
-                    case "str":
-                        format = 1;
-                        break;
-                }
-                name_get_flag = true;
-                continue;
-            } else if (name_get_flag) {
-                name_get_flag = false;
                 name = q;
-                index_get_flag = true;
-                continue;
-            } else if (index_get_flag) {
-                index_get_flag = false;
-                index = Integer.parseUnsignedInt(q);
                 getting_flag = true;
                 continue;
-            } else if (getting_flag) {
+            }  else if (getting_flag) {
                 getting_flag = false;
-                switch (format) {
-                    case 0:
-                        lastFormat = 0;
-                        integers.push(profiles.get(prof_name).geti(name).get(index));
-                        break;
-                    case 1:
-                        lastFormat = 1;
-                        strings.push(profiles.get(prof_name).gets(name).get(index));
-                        break;
+                index = Integer.parseUnsignedInt(q);
+                if (profiles.get(prof_name).get(name) instanceof IntSection) {
+                    lastFormat = 0;
+                    integers.push(profiles.get(prof_name).geti(name).get(index));
+                    is_changed = true;
+                } else if (profiles.get(prof_name).get(name) instanceof StringSection) {
+                    lastFormat = 1;
+                    strings.push(profiles.get(prof_name).gets(name).get(index));
+                    is_changed = true;
                 }
                 continue;
             } else if (add_value_flag) {
@@ -160,9 +138,13 @@ public class LOQ {
             } else if (adding_value_flag) {
                 adding_value_flag = false;
                 if (profiles.get(prof_name).get(name) instanceof IntSection) {
-                    profiles.get(prof_name).geti(name).add(Integer.parseInt(q));
+                    ((IntSection)profiles.get(prof_name).get(name)).add(Integer.parseInt(q));
+                    profiles.get(prof_name).to_file();
+                    name = "";
                 } else if (profiles.get(prof_name).get(name) instanceof StringSection) {
-                    profiles.get(prof_name).gets(name).add(q);
+                    ((StringSection)profiles.get(prof_name).get(name)).add(q);
+                    profiles.get(prof_name).to_file();
+                    name = "";
                 }
                 continue;
             }
@@ -204,6 +186,9 @@ public class LOQ {
     }
     String getProfName() {
         return prof_name;
+    }
+    public final boolean changed() {
+        return is_changed;
     }
     private List<String> AsTable(USM profile) {
         List<String> secLst = new Vector<>();
