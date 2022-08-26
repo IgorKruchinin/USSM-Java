@@ -1,6 +1,7 @@
 package USSM.USM;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.StandardOpenOption;
 import java.util.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -42,6 +43,7 @@ public class USM {
         if (!is_opened) {
             try {
                 Files.createFile(path);
+                Files.write(Paths.get("profiles/profiles_list.txt"), name_.getBytes(), StandardOpenOption.APPEND);
             } catch (IOException e) {
                 System.exit(1);
             }
@@ -57,6 +59,7 @@ public class USM {
                 formats = new Vector<>();
                 Path path = Paths.get("profiles/", name_ + ".uto");
                 Files.createFile(path);
+                Files.write(Paths.get("profiles/profiles_list.txt"), name_.getBytes(), StandardOpenOption.APPEND);
             } catch (IOException ignored) {}
         }
     }
