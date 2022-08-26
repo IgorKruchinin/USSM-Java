@@ -1,4 +1,5 @@
 package USSM.USM;
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.StandardOpenOption;
@@ -17,7 +18,7 @@ public class USM {
     private boolean is_opened;
     public USM(final String name) {
         name_ = name;
-        Path path = Paths.get("profiles/", name_ + ".uto");
+        Path path = Paths.get("profiles", File.separator,  name_ + ".uto");
         //isecs_ = new HashMap<>();
         //ssecs_ = new HashMap<>();
         secs_ = new TreeMap<>();
@@ -43,7 +44,7 @@ public class USM {
         if (!is_opened) {
             try {
                 Files.createFile(path);
-                Files.write(Paths.get("profiles/profiles_list.txt"), name_.getBytes(), StandardOpenOption.APPEND);
+                Files.write(Paths.get("profiles", File.separator, "profiles_list.txt"), name_.getBytes(), StandardOpenOption.APPEND);
             } catch (IOException e) {
                 System.exit(1);
             }
@@ -57,9 +58,9 @@ public class USM {
                 //ssecs_ = new HashMap<>();
                 secs_ = new TreeMap<>();
                 formats = new Vector<>();
-                Path path = Paths.get("profiles/", name_ + ".uto");
+                Path path = Paths.get("profiles", File.separator, name_ + ".uto");
                 Files.createFile(path);
-                Files.write(Paths.get("profiles/profiles_list.txt"), name_.getBytes(), StandardOpenOption.APPEND);
+                Files.write(Paths.get("profiles", File.separator, "profiles_list.txt"), name_.getBytes(), StandardOpenOption.APPEND);
             } catch (IOException ignored) {}
         }
     }
@@ -67,7 +68,7 @@ public class USM {
         return name_;
     }
     public void to_file() {
-        Path path = Paths.get("profiles/", name_ + ".uto");
+        Path path = Paths.get("profiles", File.separator, name_ + ".uto");
         try (final OutputStream outputStream = Files.newOutputStream(path)) {
             StringBuilder text_buf = new StringBuilder();
             for (Map.Entry<String, Section> entry: secs_.entrySet()) {
@@ -121,7 +122,7 @@ public class USM {
     }
     public static List<USM> get_profiles() {
         List<USM> profiles = new Vector<>();
-        Path path = Paths.get("profiles/profiles_list.txt");
+        Path path = Paths.get("profiles", File.separator,"profiles_list.txt");
         try {
             for (String s : Files.readAllLines(path, StandardCharsets.UTF_8)) {
                 profiles.add(new USM(s));
