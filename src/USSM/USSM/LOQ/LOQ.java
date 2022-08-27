@@ -44,7 +44,7 @@ public class LOQ {
             if (create_flag) {
                 create_flag = false;
                 if (prof_name.equals("")) {
-                    profiles.put(q, new USM(q));
+                    profiles.put(q, new USM(q, "LOQ"));
                     prof_name = q;
                 } else {
                     switch (q) {
