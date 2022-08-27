@@ -13,7 +13,7 @@ public class LOQ {
     private boolean is_changed;
     public LOQ() {
         profiles = new TreeMap<>();
-        for (USM prof: USM.get_profiles()) {
+        for (USM prof: USM.get_profiles("LOQ")) {
             profiles.put(prof.get_name(), prof);
         }
         integers = new Stack<>();
