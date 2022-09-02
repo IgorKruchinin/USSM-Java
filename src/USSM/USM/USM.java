@@ -64,6 +64,7 @@ public class USM {
                 Path path = Paths.get("profiles", File.separator, name_ + ".uto");
                 Files.createFile(path);
                 Files.write(Paths.get("profiles", File.separator, "profiles_list.txt"), name_.getBytes(), StandardOpenOption.APPEND);
+                Files.write(Paths.get("profiles", File.separator, "profiles_list.txt"), "\n".getBytes(), StandardOpenOption.APPEND);
             } catch (IOException ignored) {}
         }
     }
@@ -97,6 +98,7 @@ public class USM {
             try {
                 Files.createFile(path);
                 Files.write(Paths.get("profiles", File.separator, "profiles_list.txt"), (name_ + ":" + program_name).getBytes(), StandardOpenOption.APPEND);
+                Files.write(Paths.get("profiles", File.separator, "profiles_list.txt"), "\n".getBytes(), StandardOpenOption.APPEND);
             } catch (IOException e) {
                 System.exit(1);
             }
@@ -114,6 +116,7 @@ public class USM {
                 Path path = Paths.get("profiles", File.separator, name_ + ".uto");
                 Files.createFile(path);
                 Files.write(Paths.get("profiles", File.separator, "profiles_list.txt"), (name_ + ":" + program_name).getBytes(), StandardOpenOption.APPEND);
+                Files.write(Paths.get("profiles", File.separator, "profiles_list.txt"), "\n".getBytes(), StandardOpenOption.APPEND);
             } catch (IOException ignored) {}
         }
     }
