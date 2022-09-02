@@ -46,6 +46,8 @@ public class USM {
             try {
                 Files.createFile(path);
                 Files.write(Paths.get("profiles", File.separator, "profiles_list.txt"), name_.getBytes(), StandardOpenOption.APPEND);
+                Files.write(Paths.get("profiles", File.separator, "profiles_list.txt"), "\n".getBytes(), StandardOpenOption.APPEND);
+
             } catch (IOException e) {
                 System.exit(1);
             }

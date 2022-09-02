@@ -27,6 +27,8 @@ public class Interpreter {
                         case 1:
                             System.out.println(lang.popStr());
                             break;
+                        case 3:
+                            System.out.println(lang.getLockStatus() ? "locked" : "unlocked");
                     }
                 }
             }

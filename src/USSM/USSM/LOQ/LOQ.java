@@ -11,6 +11,7 @@ public class LOQ {
     private String prof_name = "";
     private int lastFormat = -1;
     private boolean is_changed;
+    private boolean lock_flag;
     public LOQ() {
         profiles = new TreeMap<>();
         for (USM prof: USM.get_profiles("LOQ")) {
@@ -19,21 +20,18 @@ public class LOQ {
         integers = new Stack<>();
         strings = new Stack<>();
         is_changed = false;
+        lock_flag = false;
     }
     public void parseQuery(String query) throws LOQNoProfileException {
         is_changed = false;
         boolean create_flag = false;
-        boolean add_flag = false;
         boolean post_add_flag = false;
-        boolean adding_flag = false;
         boolean entry_flag = false;
         boolean write_flag = false;
         boolean name_write_flag = false;
         boolean writing_flag = false;
         boolean get_flag = false;
-        boolean name_get_flag = false;
         boolean getting_flag = false;
-        boolean index_get_flag = false;
         boolean add_value_flag = false;
         boolean adding_value_flag = false;
         int index;
@@ -44,7 +42,11 @@ public class LOQ {
             if (create_flag) {
                 create_flag = false;
                 if (prof_name.equals("")) {
-                    profiles.put(q, new USM(q, "LOQ"));
+                    if (lock_flag) {
+                        profiles.put(q, new USM(q, "LOQ"));
+                    } else {
+                        profiles.put(q, new USM(q));
+                    }
                     prof_name = q;
                 } else {
                     switch (q) {
@@ -167,6 +169,15 @@ public class LOQ {
                 case "table":
                     AsTable(profiles.get(prof_name));
                     break;
+                case "lock":
+                    lock_flag = true;
+                    break;
+                case "unlock":
+                    lock_flag = false;
+                    break;
+                case "lock_status":
+                    getLockStatus();
+                    break;
                 case "exit":
                     prof_name = "";
                     break;
@@ -189,6 +200,11 @@ public class LOQ {
     }
     public final boolean changed() {
         return is_changed;
+    }
+    public final boolean getLockStatus() {
+        is_changed = true;
+        lastFormat = 3;
+        return lock_flag;
     }
     private List<String> AsTable(USM profile) {
         List<String> secLst = new Vector<>();
